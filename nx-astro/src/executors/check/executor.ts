@@ -360,8 +360,25 @@ async function runWatchMode(
       env: process.env,
     });
 
+    // Handle termination signals
+    const killProcess = (signal: NodeJS.Signals) => {
+      logger.info(`Received ${signal}, stopping check process...`);
+      if (childProcess && !childProcess.killed) {
+        childProcess.kill(signal);
+      }
+    };
+
+    const handleSigInt = () => killProcess('SIGINT');
+    const handleSigTerm = () => killProcess('SIGTERM');
+
+    const removeSignalHandlers = () => {
+      process.off('SIGINT', handleSigInt);
+      process.off('SIGTERM', handleSigTerm);
+    };
+
     // Handle process events
     childProcess.on('error', (error) => {
+      removeSignalHandlers();
       logger.error(`Check process failed: ${error.message}`);
       resolve({
         success: false,
@@ -370,6 +387,7 @@ async function runWatchMode(
     });
 
     childProcess.on('close', (code) => {
+      removeSignalHandlers();
       if (code === 0) {
         logger.info('Check process stopped');
         resolve({ success: true });
@@ -382,16 +400,8 @@ async function runWatchMode(
       }
     });
 
-    // Handle termination signals
-    const killProcess = (signal: NodeJS.Signals) => {
-      logger.info(`Received ${signal}, stopping check process...`);
-      if (childProcess && !childProcess.killed) {
-        childProcess.kill(signal);
-      }
-    };
-
-    process.on('SIGINT', () => killProcess('SIGINT'));
-    process.on('SIGTERM', () => killProcess('SIGTERM'));
+    process.on('SIGINT', handleSigInt);
+    process.on('SIGTERM', handleSigTerm);
 
     logger.info('Check is running in watch mode. Press Ctrl+C to stop.');
   });
