@@ -1,9 +1,12 @@
 import { ExecutorContext, logger } from '@nx/devkit';
+import { createLockFile, createPackageJson, getLockFileName } from '@nx/js';
 import { exec } from 'child_process';
+import { mkdirSync, writeFileSync } from 'fs';
 import { promisify } from 'util';
 import * as path from 'path';
 import { BuildExecutorSchema } from './schema';
 import { buildAstroCommandString } from '../../utils/command-builder';
+import { detectPackageManager } from '../../utils/dependency-checker';
 import { syncAstrojsDependencies } from '../../utils/sync-astrojs-deps';
 
 const execAsync = promisify(exec);
@@ -11,6 +14,20 @@ const execAsync = promisify(exec);
 export interface BuildExecutorOutput {
   success: boolean;
   error?: string;
+}
+
+function resolveOutputPath(
+  outputPath: string | undefined,
+  workspaceRoot: string,
+  projectRoot: string,
+): string {
+  if (outputPath) {
+    return path.isAbsolute(outputPath)
+      ? outputPath
+      : path.join(workspaceRoot, outputPath);
+  }
+
+  return path.join(workspaceRoot, 'dist', projectRoot);
 }
 
 export default async function buildExecutor(
@@ -93,6 +110,50 @@ export default async function buildExecutor(
 
     if (stderr) {
       logger.warn(stderr);
+    }
+
+    if (options.generatePackageJson) {
+      const outputDirectory = resolveOutputPath(
+        options.outputPath,
+        context.root,
+        projectConfig.root,
+      );
+      mkdirSync(outputDirectory, { recursive: true });
+
+      const packageJson = createPackageJson(projectName, context.projectGraph, {
+        root: context.root,
+        target: context.targetName,
+        isProduction: !options.includeDevDependencies,
+        skipOverrides: options.skipOverrides,
+        skipPackageManager: options.skipPackageManager ?? false,
+      });
+
+      if (!options.includePeerDependencies) {
+        delete packageJson.peerDependencies;
+        delete packageJson.peerDependenciesMeta;
+      }
+
+      writeFileSync(
+        path.join(outputDirectory, 'package.json'),
+        JSON.stringify(packageJson, null, 2),
+      );
+      logger.info(
+        `Generated package.json for ${projectName} in ${outputDirectory}`,
+      );
+
+      if (!options.skipPackageManager) {
+        const packageManager = detectPackageManager(context.root);
+        const lockFile = createLockFile(
+          packageJson,
+          context.projectGraph,
+          packageManager,
+        );
+        const lockFileName = getLockFileName(packageManager);
+        writeFileSync(path.join(outputDirectory, lockFileName), lockFile);
+        logger.info(
+          `Generated ${lockFileName} for ${projectName} in ${outputDirectory}`,
+        );
+      }
     }
 
     logger.info('Build completed successfully');

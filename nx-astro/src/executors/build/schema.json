@@ -52,6 +52,31 @@
       "items": {
         "type": "string"
       }
+    },
+    "generatePackageJson": {
+      "type": "boolean",
+      "description": "Generate a package.json and lock file in the build output",
+      "default": false
+    },
+    "includeDevDependencies": {
+      "type": "boolean",
+      "description": "Include devDependencies in the generated package.json",
+      "default": false
+    },
+    "includePeerDependencies": {
+      "type": "boolean",
+      "description": "Include peerDependencies in the generated package.json",
+      "default": false
+    },
+    "skipOverrides": {
+      "type": "boolean",
+      "description": "Skip applying package.json overrides when generating dependencies",
+      "default": false
+    },
+    "skipPackageManager": {
+      "type": "boolean",
+      "description": "Skip generating the package manager lock file",
+      "default": false
     }
   },
   "required": []

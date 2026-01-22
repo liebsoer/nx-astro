@@ -1,5 +1,6 @@
 import { ExecutorContext } from '@nx/devkit';
 import { BuildExecutorSchema } from './schema';
+import { mkdirSync, writeFileSync } from 'fs';
 
 // Mock child_process
 const mockExec = jest.fn();
@@ -12,11 +13,39 @@ jest.mock('child_process', () => {
   };
 });
 
+// Mock fs writes
+jest.mock('fs', () => {
+  const actual = jest.requireActual('fs');
+  return {
+    ...actual,
+    mkdirSync: jest.fn(),
+    writeFileSync: jest.fn(),
+  };
+});
+
 // Mock command-builder
 const mockBuildAstroCommandString = jest.fn();
 
 jest.mock('../../utils/command-builder', () => ({
   buildAstroCommandString: mockBuildAstroCommandString,
+}));
+
+// Mock @nx/js
+const mockCreatePackageJson = jest.fn();
+const mockCreateLockFile = jest.fn();
+const mockGetLockFileName = jest.fn();
+
+jest.mock('@nx/js', () => ({
+  createPackageJson: (...args: any[]) => mockCreatePackageJson(...args),
+  createLockFile: (...args: any[]) => mockCreateLockFile(...args),
+  getLockFileName: (...args: any[]) => mockGetLockFileName(...args),
+}));
+
+// Mock dependency-checker
+const mockDetectPackageManager = jest.fn();
+
+jest.mock('../../utils/dependency-checker', () => ({
+  detectPackageManager: (...args: any[]) => mockDetectPackageManager(...args),
 }));
 
 // Mock sync-astrojs-deps
@@ -84,6 +113,12 @@ describe('Build Executor', () => {
     mockExec.mockClear();
     mockBuildAstroCommandString.mockClear();
     mockSyncAstrojsDependencies.mockClear();
+    mockCreatePackageJson.mockClear();
+    mockCreateLockFile.mockClear();
+    mockGetLockFileName.mockClear();
+    mockDetectPackageManager.mockClear();
+    (mkdirSync as jest.Mock).mockClear();
+    (writeFileSync as jest.Mock).mockClear();
 
     // Default mock implementation - returns a command string
     mockBuildAstroCommandString.mockReturnValue(
@@ -95,6 +130,11 @@ describe('Build Executor', () => {
       callback(null, { stdout: 'Build successful', stderr: '' });
       return {} as any;
     });
+
+    mockCreatePackageJson.mockReturnValue({ name: 'my-app' });
+    mockCreateLockFile.mockReturnValue('lockfile');
+    mockDetectPackageManager.mockReturnValue('pnpm');
+    mockGetLockFileName.mockReturnValue('pnpm-lock.yaml');
   });
 
   describe('basic build', () => {
@@ -243,6 +283,69 @@ describe('Build Executor', () => {
         ['--root', '/workspace/apps/my-app', '--mode', 'server'],
         '/workspace',
       );
+    });
+  });
+
+  describe('package.json generation', () => {
+    it('should not generate package.json when option is disabled', async () => {
+      const options: BuildExecutorSchema = {};
+
+      await buildExecutor(options, context);
+
+      expect(mockCreatePackageJson).not.toHaveBeenCalled();
+      expect(mockCreateLockFile).not.toHaveBeenCalled();
+    });
+
+    it('should generate package.json and lock file when enabled', async () => {
+      const options: BuildExecutorSchema = {
+        generatePackageJson: true,
+        includeDevDependencies: true,
+        includePeerDependencies: true,
+        skipOverrides: true,
+        outputPath: 'dist/custom',
+      };
+
+      await buildExecutor(options, context);
+
+      expect(mockCreatePackageJson).toHaveBeenCalledWith(
+        'my-app',
+        context.projectGraph,
+        {
+          root: '/workspace',
+          target: 'build',
+          isProduction: false,
+          skipOverrides: true,
+          skipPackageManager: false,
+        },
+      );
+      expect(mkdirSync).toHaveBeenCalledWith('/workspace/dist/custom', {
+        recursive: true,
+      });
+      expect(writeFileSync).toHaveBeenCalledWith(
+        '/workspace/dist/custom/package.json',
+        JSON.stringify({ name: 'my-app' }, null, 2),
+      );
+      expect(mockCreateLockFile).toHaveBeenCalledWith(
+        { name: 'my-app' },
+        context.projectGraph,
+        'pnpm',
+      );
+      expect(writeFileSync).toHaveBeenCalledWith(
+        '/workspace/dist/custom/pnpm-lock.yaml',
+        'lockfile',
+      );
+    });
+
+    it('should skip lock file generation when skipPackageManager is true', async () => {
+      const options: BuildExecutorSchema = {
+        generatePackageJson: true,
+        skipPackageManager: true,
+      };
+
+      await buildExecutor(options, context);
+
+      expect(mockCreatePackageJson).toHaveBeenCalled();
+      expect(mockCreateLockFile).not.toHaveBeenCalled();
     });
   });
 
