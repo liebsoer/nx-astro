@@ -376,6 +376,9 @@ async function runWatchMode(
       process.off('SIGTERM', handleSigTerm);
     };
 
+    process.on('SIGINT', handleSigInt);
+    process.on('SIGTERM', handleSigTerm);
+
     // Handle process events
     childProcess.on('error', (error) => {
       removeSignalHandlers();
@@ -399,9 +402,6 @@ async function runWatchMode(
         });
       }
     });
-
-    process.on('SIGINT', handleSigInt);
-    process.on('SIGTERM', handleSigTerm);
 
     logger.info('Check is running in watch mode. Press Ctrl+C to stop.');
   });

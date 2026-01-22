@@ -114,6 +114,9 @@ export default async function devExecutor(
         process.off('SIGTERM', handleSigTerm);
       };
 
+      process.on('SIGINT', handleSigInt);
+      process.on('SIGTERM', handleSigTerm);
+
       // Handle process events
       childProcess.on('error', (error) => {
         removeSignalHandlers();
@@ -137,9 +140,6 @@ export default async function devExecutor(
           });
         }
       });
-
-      process.on('SIGINT', handleSigInt);
-      process.on('SIGTERM', handleSigTerm);
 
       logger.info('Dev server is running. Press Ctrl+C to stop.');
     } catch (error) {

@@ -210,6 +210,9 @@ async function runWatchMode(
       process.off('SIGTERM', handleSigTerm);
     };
 
+    process.on('SIGINT', handleSigInt);
+    process.on('SIGTERM', handleSigTerm);
+
     childProcess.on('error', (error) => {
       removeSignalHandlers();
       logger.error(`Test process failed: ${error.message}`);
@@ -232,9 +235,6 @@ async function runWatchMode(
         });
       }
     });
-
-    process.on('SIGINT', handleSigInt);
-    process.on('SIGTERM', handleSigTerm);
 
     logger.info('Tests are running in watch mode. Press Ctrl+C to stop.');
   });
