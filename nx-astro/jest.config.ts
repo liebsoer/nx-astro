@@ -1,4 +1,4 @@
-export default {
+const config: import('jest').Config = {
   displayName: 'nx-astro',
   preset: '../jest.preset.js',
   testEnvironment: 'node',
@@ -8,3 +8,5 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/nx-astro',
 };
+
+module.exports = config;
