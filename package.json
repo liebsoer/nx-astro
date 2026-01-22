@@ -23,6 +23,7 @@
   "dependencies": {
     "@astrojs/node": "^9.5.0",
     "@nx/devkit": "21.6.4",
+    "@nx/js": "21.6.5",
     "astro": "^5.14.5"
   },
   "devDependencies": {
@@ -30,7 +31,6 @@
     "@nx/eslint": "21.6.5",
     "@nx/eslint-plugin": "21.6.5",
     "@nx/jest": "21.6.5",
-    "@nx/js": "21.6.5",
     "@nx/plugin": "21.6.5",
     "@nx/workspace": "21.6.5",
     "@swc-node/register": "~1.11.1",

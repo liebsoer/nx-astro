@@ -551,6 +551,26 @@ Each Astro project has a `project.json` defining its targets:
 }
 ```
 
+### Build Artifacts for Deployment
+
+The build executor can optionally generate a deployment-focused `package.json` and lockfile:
+
+```json
+{
+  "build": {
+    "executor": "@geekvetica/nx-astro:build",
+    "options": {
+      "outputPath": "dist/apps/my-app",
+      "generatePackageJson": true,
+      "includeDevDependencies": false,
+      "includePeerDependencies": true,
+      "mergePeerInDependencies": false,
+      "packageManager": "pnpm"
+    }
+  }
+}
+```
+
 ### astro.config.mjs
 
 Standard Astro configuration file:

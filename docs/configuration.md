@@ -137,6 +137,26 @@ When the plugin detects an Astro project, it automatically creates these targets
 }
 ```
 
+##### Build Target Options
+
+You can optionally generate deployment artifacts in the output directory:
+
+```json
+{
+  "executor": "@geekvetica/nx-astro:build",
+  "options": {
+    "outputPath": "dist/apps/my-app",
+    "generatePackageJson": true,
+    "includeDevDependencies": false,
+    "includePeerDependencies": true,
+    "mergePeerInDependencies": false,
+    "skipOverrides": false,
+    "skipPackageManager": false,
+    "packageManager": "pnpm"
+  }
+}
+```
+
 #### Preview Target
 
 ```json

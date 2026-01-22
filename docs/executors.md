@@ -180,18 +180,25 @@ nx build my-app --sourcemap
 
 ### Options
 
-| Option           | Type       | Default              | Description                                                                                                       |
-| ---------------- | ---------- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `outputPath`     | `string`   | from config          | Override the default output directory. By default, uses `dist/{projectRoot}` or the value from `astro.config.mjs` |
-| `mode`           | `string`   | -                    | Build mode: `'static'` for SSG or `'server'` for SSR (usually determined by astro.config.mjs)                     |
-| `root`           | `string`   | project root         | Project root path (provided by Nx automatically)                                                                  |
-| `config`         | `string`   | `"astro.config.mjs"` | Path to Astro config file                                                                                         |
-| `site`           | `string`   | -                    | Site URL for absolute URLs in production                                                                          |
-| `base`           | `string`   | -                    | Base path for deployment (e.g., `/blog` for subdirectory deployments)                                             |
-| `sourcemap`      | `boolean`  | `false`              | Generate source maps for debugging production builds                                                              |
-| `clean`          | `boolean`  | `true`               | Clean output directory before build                                                                               |
-| `verbose`        | `boolean`  | `false`              | Enable verbose output for debugging                                                                               |
-| `additionalArgs` | `string[]` | -                    | Additional CLI arguments to pass to Astro                                                                         |
+| Option                    | Type       | Default              | Description                                                                                                       |
+| ------------------------- | ---------- | -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `outputPath`              | `string`   | from config          | Override the default output directory. By default, uses `dist/{projectRoot}` or the value from `astro.config.mjs` |
+| `mode`                    | `string`   | -                    | Build mode: `'static'` for SSG or `'server'` for SSR (usually determined by astro.config.mjs)                     |
+| `root`                    | `string`   | project root         | Project root path (provided by Nx automatically)                                                                  |
+| `config`                  | `string`   | `"astro.config.mjs"` | Path to Astro config file                                                                                         |
+| `site`                    | `string`   | -                    | Site URL for absolute URLs in production                                                                          |
+| `base`                    | `string`   | -                    | Base path for deployment (e.g., `/blog` for subdirectory deployments)                                             |
+| `sourcemap`               | `boolean`  | `false`              | Generate source maps for debugging production builds                                                              |
+| `clean`                   | `boolean`  | `true`               | Clean output directory before build                                                                               |
+| `verbose`                 | `boolean`  | `false`              | Enable verbose output for debugging                                                                               |
+| `additionalArgs`          | `string[]` | -                    | Additional CLI arguments to pass to Astro                                                                         |
+| `generatePackageJson`     | `boolean`  | `false`              | Generate a `package.json` and lockfile in the build output directory                                              |
+| `includeDevDependencies`  | `boolean`  | `false`              | Include `devDependencies` in the generated `package.json`                                                         |
+| `includePeerDependencies` | `boolean`  | `false`              | Include `peerDependencies` in the generated `package.json`                                                        |
+| `mergePeerInDependencies` | `boolean`  | `false`              | Copy peer dependencies into `dependencies` in the generated `package.json`                                        |
+| `skipOverrides`           | `boolean`  | `false`              | Skip merging overrides/resolutions from the workspace root `package.json`                                         |
+| `skipPackageManager`      | `boolean`  | `false`              | Skip the `packageManager` field and lockfile generation                                                           |
+| `packageManager`          | `string`   | -                    | Target package manager for lockfile generation (`npm`, `pnpm`, `yarn`, `bun`)                                     |
 
 ### Build Output
 
@@ -258,6 +265,22 @@ nx build my-app --base=/my-app
 nx build my-app --site=https://example.com
 
 # Useful for canonical URLs, sitemaps, RSS feeds
+```
+
+#### Generate deployment package.json
+
+```bash
+# Generate package.json + lockfile in the output directory
+nx build my-app --generatePackageJson
+
+# Include devDependencies and peerDependencies
+nx build my-app --generatePackageJson --includeDevDependencies --includePeerDependencies
+
+# Merge peerDependencies into dependencies (for deployment environments)
+nx build my-app --generatePackageJson --includePeerDependencies --mergePeerInDependencies
+
+# Force lockfile type regardless of workspace package manager
+nx build my-app --generatePackageJson --packageManager=yarn
 ```
 
 #### Development Build

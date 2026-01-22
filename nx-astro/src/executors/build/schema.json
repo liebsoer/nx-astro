@@ -52,6 +52,41 @@
       "items": {
         "type": "string"
       }
+    },
+    "generatePackageJson": {
+      "type": "boolean",
+      "description": "Generate a package.json and lockfile in the build output directory",
+      "default": false
+    },
+    "includeDevDependencies": {
+      "type": "boolean",
+      "description": "Include devDependencies in the generated package.json",
+      "default": false
+    },
+    "includePeerDependencies": {
+      "type": "boolean",
+      "description": "Include peerDependencies in the generated package.json",
+      "default": false
+    },
+    "mergePeerInDependencies": {
+      "type": "boolean",
+      "description": "Copy peerDependencies into dependencies in the generated package.json",
+      "default": false
+    },
+    "skipOverrides": {
+      "type": "boolean",
+      "description": "Skip merging package manager overrides/resolutions into the generated package.json",
+      "default": false
+    },
+    "skipPackageManager": {
+      "type": "boolean",
+      "description": "Skip setting the packageManager field in the generated package.json",
+      "default": false
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "pnpm", "yarn", "bun"],
+      "description": "Target package manager for lockfile generation (overrides auto-detected)"
     }
   },
   "required": []

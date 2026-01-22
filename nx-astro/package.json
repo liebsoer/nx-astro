@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@nx/devkit": "21.6.4",
+    "@nx/js": "21.6.5",
     "tslib": "^2.3.0"
   },
   "peerDependencies": {

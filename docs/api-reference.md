@@ -302,6 +302,41 @@ nx dev my-app --host=true --open
       "type": "array",
       "description": "Additional CLI arguments to pass to Astro",
       "items": { "type": "string" }
+    },
+    "generatePackageJson": {
+      "type": "boolean",
+      "description": "Generate a package.json and lockfile in the build output directory",
+      "default": false
+    },
+    "includeDevDependencies": {
+      "type": "boolean",
+      "description": "Include devDependencies in the generated package.json",
+      "default": false
+    },
+    "includePeerDependencies": {
+      "type": "boolean",
+      "description": "Include peerDependencies in the generated package.json",
+      "default": false
+    },
+    "mergePeerInDependencies": {
+      "type": "boolean",
+      "description": "Copy peerDependencies into dependencies in the generated package.json",
+      "default": false
+    },
+    "skipOverrides": {
+      "type": "boolean",
+      "description": "Skip merging package manager overrides/resolutions into the generated package.json",
+      "default": false
+    },
+    "skipPackageManager": {
+      "type": "boolean",
+      "description": "Skip setting the packageManager field in the generated package.json",
+      "default": false
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "pnpm", "yarn", "bun"],
+      "description": "Target package manager for lockfile generation (overrides auto-detected)"
     }
   },
   "required": []
@@ -318,18 +353,25 @@ Build an Astro project for production.
 
 #### Properties
 
-| Property         | Type       | Default              | Description                           |
-| ---------------- | ---------- | -------------------- | ------------------------------------- |
-| `outputPath`     | `string`   | from config          | Override the default output directory |
-| `mode`           | `string`   | -                    | Build mode: 'static' or 'server'      |
-| `root`           | `string`   | project root         | Project root path                     |
-| `config`         | `string`   | `"astro.config.mjs"` | Path to Astro config file             |
-| `site`           | `string`   | -                    | Site URL for absolute URLs            |
-| `base`           | `string`   | -                    | Base path for deployment              |
-| `sourcemap`      | `boolean`  | `false`              | Generate source maps                  |
-| `clean`          | `boolean`  | `true`               | Clean output directory before build   |
-| `verbose`        | `boolean`  | `false`              | Enable verbose output                 |
-| `additionalArgs` | `string[]` | -                    | Additional CLI arguments              |
+| Property                  | Type       | Default              | Description                                 |
+| ------------------------- | ---------- | -------------------- | ------------------------------------------- |
+| `outputPath`              | `string`   | from config          | Override the default output directory       |
+| `mode`                    | `string`   | -                    | Build mode: 'static' or 'server'            |
+| `root`                    | `string`   | project root         | Project root path                           |
+| `config`                  | `string`   | `"astro.config.mjs"` | Path to Astro config file                   |
+| `site`                    | `string`   | -                    | Site URL for absolute URLs                  |
+| `base`                    | `string`   | -                    | Base path for deployment                    |
+| `sourcemap`               | `boolean`  | `false`              | Generate source maps                        |
+| `clean`                   | `boolean`  | `true`               | Clean output directory before build         |
+| `verbose`                 | `boolean`  | `false`              | Enable verbose output                       |
+| `additionalArgs`          | `string[]` | -                    | Additional CLI arguments                    |
+| `generatePackageJson`     | `boolean`  | `false`              | Generate a package.json and lockfile        |
+| `includeDevDependencies`  | `boolean`  | `false`              | Include devDependencies                     |
+| `includePeerDependencies` | `boolean`  | `false`              | Include peerDependencies                    |
+| `mergePeerInDependencies` | `boolean`  | `false`              | Copy peer deps into dependencies            |
+| `skipOverrides`           | `boolean`  | `false`              | Skip overrides/resolutions merge            |
+| `skipPackageManager`      | `boolean`  | `false`              | Skip packageManager field/lockfile          |
+| `packageManager`          | `string`   | -                    | Target lockfile manager (npm/pnpm/yarn/bun) |
 
 #### Usage
 

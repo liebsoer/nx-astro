@@ -1,3 +1,11 @@
+## Unreleased
+
+### 🚀 Features
+
+- add build executor support for generating package.json and lockfile artifacts
+  - new options for dev/peer dependency inclusion and peer merging
+  - package manager override for lockfile generation
+
 ## 1.0.8 (2025-10-22)
 
 ### 🚀 Features
