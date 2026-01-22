@@ -48,10 +48,14 @@
   },
   "peerDependencies": {
     "nx": ">=21.0.0",
-    "astro": ">=5.0.0"
+    "astro": ">=5.0.0",
+    "@nx/js": ">=21.0.0"
   },
   "peerDependenciesMeta": {
     "astro": {
+      "optional": true
+    },
+    "@nx/js": {
       "optional": true
     }
   }

@@ -192,6 +192,11 @@ nx build my-app --sourcemap
 | `clean`          | `boolean`  | `true`               | Clean output directory before build                                                                               |
 | `verbose`        | `boolean`  | `false`              | Enable verbose output for debugging                                                                               |
 | `additionalArgs` | `string[]` | -                    | Additional CLI arguments to pass to Astro                                                                         |
+| `generatePackageJson` | `boolean` | `false`          | Generate a package.json (and lock file) in the build output                                                       |
+| `includeDevDependencies` | `boolean` | `false`       | Include devDependencies in the generated package.json                                                             |
+| `includePeerDependencies` | `boolean` | `false`      | Include peerDependencies in the generated package.json                                                            |
+| `skipOverrides`  | `boolean`  | `false`              | Skip applying package.json overrides when generating dependencies                                                 |
+| `skipPackageManager` | `boolean` | `false`          | Skip generating the package manager lock file                                                                     |
 
 ### Build Output
 
@@ -290,6 +295,19 @@ nx build my-app --clean=false
 nx build my-app --verbose
 
 # Useful for debugging build issues
+```
+
+#### Generate package.json and lock file
+
+```bash
+# Create a deployment-ready package.json and lock file in the build output
+nx build my-app --generatePackageJson
+
+# Include dev and peer dependencies if needed for SSR runtimes
+nx build my-app --generatePackageJson --includeDevDependencies --includePeerDependencies
+
+# Generate only package.json (skip lock file)
+nx build my-app --generatePackageJson --skipPackageManager
 ```
 
 ### Build Caching
